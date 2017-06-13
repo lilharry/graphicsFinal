@@ -1,90 +1,90 @@
 import lex, yacc
 
 tokens = (
-    "STRING", 
-    "ID", 
-    "XYZ", 
-    "DOUBLE", 
-    "INT", 
-    "COMMENT", 
-    "LIGHT", 
-    "CONSTANTS", 
-    "SAVE_COORDS", 
-    "CAMERA", 
-    "AMBIENT", 
-    "TORUS", 
-    "SPHERE", 
-    "BOX", 
-    "LINE", 
-    "BEZIER", 
-    "HERMITE", 
-    "CIRCLE", 
-    "MESH", 
-    "TEXTURE", 
-    "SET", 
-    "MOVE", 
-    "SCALE", 
-    "ROTATE", 
-    "BASENAME", 
-    "SAVE_KNOBS", 
-    "TWEEN", 
-    "FRAMES", 
-    "VARY", 
-    "PUSH", 
-    "POP", 
-    "SAVE", 
-    "GENERATE_RAYFILES", 
-    "SHADING", 
-    "SHADING_TYPE", 
-    "SET_KNOBS", 
-    "FOCAL", 
-    "DISPLAY", 
-    "SCREEN", 
-    "WEB", 
+    "STRING",
+    "ID",
+    "XYZ",
+    "DOUBLE",
+    "INT",
+    "COMMENT",
+    "LIGHT",
+    "CONSTANTS",
+    "SAVE_COORDS",
+    "CAMERA",
+    "AMBIENT",
+    "TORUS",
+    "SPHERE",
+    "BOX",
+    "LINE",
+    "BEZIER",
+    "HERMITE",
+    "CIRCLE",
+    "MESH",
+    "TEXTURE",
+    "SET",
+    "MOVE",
+    "SCALE",
+    "ROTATE",
+    "BASENAME",
+    "SAVE_KNOBS",
+    "TWEEN",
+    "FRAMES",
+    "VARY",
+    "PUSH",
+    "POP",
+    "SAVE",
+    "GENERATE_RAYFILES",
+    "SHADING",
+    "SHADING_TYPE",
+    "SET_KNOBS",
+    "FOCAL",
+    "DISPLAY",
+    "SCREEN",
+    "WEB",
     "CO"
 )
 
 reserved = {
-    "x" : "XYZ", 
-    "y" : "XYZ", 
-    "z" : "XYZ", 
-    "screen" : "SCREEN", 
+    "x" : "XYZ",
+    "y" : "XYZ",
+    "z" : "XYZ",
+    "screen" : "SCREEN",
     "light" : "LIGHT",
     "constants" : "CONSTANTS",
-    "save_coord_system" : "SAVE_COORDS", 
-    "camera" : "CAMERA", 
-    "ambient" : "AMBIENT", 
-    "torus" : "TORUS", 
-    "sphere" : "SPHERE", 
-    "box" : "BOX", 
-    "line" : "LINE", 
-    "bezier" : "BEZIER", 
-    "hermite" : "HERMITE", 
-    "circle" : "CIRCLE", 
-    "mesh" : "MESH", 
-    "texture" : "TEXTURE", 
-    "set" : "SET", 
-    "move" : "MOVE", 
-    "scale" : "SCALE", 
-    "rotate" : "ROTATE", 
-    "basename" : "BASENAME", 
-    "save_knobs" : "SAVE_KNOBS", 
-    "tween" : "TWEEN", 
-    "frames" : "FRAMES", 
-    "vary" : "VARY", 
-    "push" : "PUSH", 
-    "pop" : "POP", 
-    "save" : "SAVE", 
-    "generate_rayfiles" : "GENERATE_RAYFILES", 
-    "shading" : "SHADING", 
-    "phong" : "SHADING_TYPE", 
-    "flat" : "SHADING_TYPE", 
-    "ground" : "SHADING_TYPE", 
-    "raytrace" : "SHADING_TYPE", 
-    "wireframe" : "SHADING_TYPE", 
-    "set_knobs" : "SET_KNOBS", 
-    "focal" : "FOCAL", 
-    "display" : "DISPLAY", 
+    "save_coord_system" : "SAVE_COORDS",
+    "camera" : "CAMERA",
+    "ambient" : "AMBIENT",
+    "torus" : "TORUS",
+    "sphere" : "SPHERE",
+    "box" : "BOX",
+    "line" : "LINE",
+    "bezier" : "BEZIER",
+    "hermite" : "HERMITE",
+    "circle" : "CIRCLE",
+    "mesh" : "MESH",
+    "texture" : "TEXTURE",
+    "set" : "SET",
+    "move" : "MOVE",
+    "scale" : "SCALE",
+    "rotate" : "ROTATE",
+    "basename" : "BASENAME",
+    "save_knobs" : "SAVE_KNOBS",
+    "tween" : "TWEEN",
+    "frames" : "FRAMES",
+    "vary" : "VARY",
+    "push" : "PUSH",
+    "pop" : "POP",
+    "save" : "SAVE",
+    "generate_rayfiles" : "GENERATE_RAYFILES",
+    "shading" : "SHADING",
+    "phong" : "SHADING_TYPE",
+    "flat" : "SHADING_TYPE",
+    "goroud" : "SHADING_TYPE",
+    "raytrace" : "SHADING_TYPE",
+    "wireframe" : "SHADING_TYPE",
+    "set_knobs" : "SET_KNOBS",
+    "focal" : "FOCAL",
+    "display" : "DISPLAY",
     "web" : "WEB"
 }
 
@@ -128,7 +128,7 @@ commands = []
 symbols = {}
 
 def p_stuff(p):
-    """stuff : 
+    """stuff :
             | statement stuff"""
     pass
 
@@ -169,7 +169,7 @@ def p_statement_save(p):
         commands.append(tuple(p[1:]))
     else:
         commands.append((p[1], None))
-    
+
 def p_statement_show(p):
     """statement : DISPLAY TEXT
                  | DISPLAY"""
@@ -182,27 +182,36 @@ def p_statement_knobs(p):
     if p[1] == "set":
         #symbols.append(("knob", p[2]))
         symbols[p[2]] = ['knob', 0]
-        
+
 def p_statement_sphere(p):
     """statement : SPHERE NUMBER NUMBER NUMBER NUMBER INT INT
-                 | SPHERE NUMBER NUMBER NUMBER NUMBER"""
+                 | SPHERE NUMBER NUMBER NUMBER NUMBER
+                 | SPHERE SYMBOL NUMBER NUMBER NUMBER NUMBER"""
     if len(p) == 6:
         commands.append((p[1], p[2], p[3], p[4], p[5], None))
+    elif len(p) == 7:
+        commands.append((p[1], p[3], p[4], p[5], p[6], p[2]))
     else:
         commands.append((p[1], p[2], p[3], p[4], p[5], [p[6], p[7]]))
 
 def p_statement_torus(p):
     """statement : TORUS NUMBER NUMBER NUMBER NUMBER NUMBER INT INT
-                 | TORUS NUMBER NUMBER NUMBER NUMBER NUMBER"""
+                 | TORUS NUMBER NUMBER NUMBER NUMBER NUMBER
+                 | TORUS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER"""
     if len(p) == 7:
         commands.append((p[1], p[2], p[3], p[4], p[5], p[6], None))
+    elif len(p) == 8:
+        commands.append((p[1], p[3], p[4], p[5], p[6], p[7], p[2]))
     else:
         commands.append((p[1], p[2], p[3], p[4], p[5], p[6], [p[7], p[8]]))
 
 def p_statement_box(p):
-    "statement : BOX NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"
-    commands.append(tuple(p[1:]))
-
+    """statement : BOX NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
+                 | BOX SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"""
+    if len(p) == 8:
+        commands.append(tuple(p[1:] +[None]))
+    else:
+        commands.append((p[1], p[3], p[4], p[5], p[6], p[7], p[8], p[2]))
 def p_statement_line(p):
     "statement : LINE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"
     commands.append(tuple(p[1:]))
@@ -236,7 +245,7 @@ def p_statement_move(p):
     else:
         commands.append(tuple(p[1:]))
         symbols[p[5]] = ['knob', 0]
-        
+
 def p_statement_scale(p):
     """statement : SCALE NUMBER NUMBER NUMBER SYMBOL
                  | SCALE NUMBER NUMBER NUMBER"""
@@ -245,7 +254,7 @@ def p_statement_scale(p):
     else:
         commands.append(tuple(p[1:]))
         symbols[p[5]] = ['knob', 0]
-        
+
 def p_statement_rotate(p):
     """statement : ROTATE XYZ NUMBER SYMBOL
                  | ROTATE XYZ NUMBER"""
@@ -254,7 +263,23 @@ def p_statement_rotate(p):
     else:
         commands.append(tuple(p[1:]))
         symbols[p[4]] = ['knob', 0]
-        
+
+def p_statement_ambient(p):
+    "statement : AMBIENT INT INT INT"
+    symbols['ambient'] = ['ambient'] + p[2:]
+
+def p_statement_constants(p):
+    "statement : CONSTANTS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"
+    symbols[p[2]] = ['constants', {'red' : p[3:6], 'green' : p[6:9], 'blue' : p[9:]}]
+
+def p_statement_light(p):
+    "statement : LIGHT SYMBOL NUMBER NUMBER NUMBER INT INT INT"
+    symbols[p[2]] = ['light', {'location' : p[3:6], 'color' : p[6:]}]
+
+def p_statement_shading(p):
+    "statement : SHADING SHADING_TYPE"
+    symbols['shading'] = ['shade_type', p[2]]
+
 def p_SYMBOL(p):
     """SYMBOL : XYZ
               | ID"""
@@ -278,7 +303,7 @@ def parseFile(filename):
     """
     This funstion returns a tuple containing a list of opcodes
     and a list of symbols.
-    Every opcode is a tuple of the form 
+    Every opcode is a tuple of the form
     (commandname, parameter, parameter, ...).
     Every symbol is a tuple of the form (type, name).
     """
